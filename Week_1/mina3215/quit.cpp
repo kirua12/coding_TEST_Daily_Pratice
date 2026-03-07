@@ -25,6 +25,7 @@ int next_permutation(int* arr, int arr_size) {
         i++;
         j--;
     }
+    return 0;
 }
 
 int main()
@@ -42,12 +43,17 @@ int main()
         return 0;
     }
 
-    int **team_senerge = new int*[N ]; // 팀 시너지 배열을 입력 받은 만큼 할당함 2차원 배열로
+    int **team_senerge = new int*[N]; // 팀 시너지 배열을 입력 받은 만큼 할당함 2차원 배열로
     int *human = new int[N];
 
-    for (int i = N/2; i < N; i++) {
+    for (int i = 0; i < N; i++) {
         team_senerge[i] = new int[N];
-        human[i] = 1; // 1로 초기화 -> 나중에 팀을 나눌 때 사용하기 위해서
+        human[i] = 0;
+    }
+
+    for(int i = N/2; i < N; i++) //팀을 나누는 경우의 수를 나타내는 배열 -> 0은 팀1, 1은 팀2
+    {
+        human[i] = 1;
     }
 
     for(int i = 0; i < N; i++)
@@ -110,12 +116,15 @@ int main()
     std::cout << MIN_SENERGE_DIFF << std::endl; //최솟값 출력
 
 
-    for (int i = 0; i <= N; i++) { //동적할당한것을 지워줘야함 -> 메모리 누수 방지
+    for (int i = 0; i < N; i++) { //동적할당한것을 지워줘야함 -> 메모리 누수 방지
         delete[] team_senerge[i];
     }
     delete[] team_senerge;
+    delete[] human;
 
+    system("pause"); //프로그램이 바로 종료되지 않도록 일시정지
     return 0;
+
 
 
 }
