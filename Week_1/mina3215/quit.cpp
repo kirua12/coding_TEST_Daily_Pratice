@@ -73,14 +73,20 @@ int main()
     //하지만 6명 이상의 경우 확률이 증가함 그것에 대한 수식을 확립해야함 -> 매우 중요!
     //결국 full search로 모든 경우의 수를 탐색
     int MIN_SENERGE_DIFF = 100000000; //시너지 차이의 최솟값을 저장할 변수 -> 초기값은 매우 큰 수로 설정
+
+    int count = 0; //팀을 나누는 경우의 수를 세는 변수
+
     while(1)
     {
-        if(next_permutation(human, N) == 5) //팀을 나누는 경우의 수가 5개 이상인 경우 -> 6명 이상인 경우
+        if(count == -2)
         {
-        break;
+            break;
         }
+       
         if(human[0] ==0)
         {
+            count ++;
+
             int team1_senerge = 0;
             int team2_senerge = 0;
 
@@ -106,14 +112,16 @@ int main()
                 MIN_SENERGE_DIFF = senerge_diff;
             }
         }
-
-
+        if (next_permutation(human, N) == 5) // 팀을 나누는 경우의 수가 5개 이상인 경우 -> 6명 이상인 경우
+        {
+            count = -2;
+        }
     }
     
 
 
 
-    std::cout << MIN_SENERGE_DIFF << std::endl; //최솟값 출력
+    std::cout << MIN_SENERGE_DIFF<<std::endl; //최솟값 출력
 
 
     for (int i = 0; i < N; i++) { //동적할당한것을 지워줘야함 -> 메모리 누수 방지
