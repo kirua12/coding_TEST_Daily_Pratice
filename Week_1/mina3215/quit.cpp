@@ -30,7 +30,7 @@ int next_permutation(int* arr, int arr_size) {
 
 int main()
 {
-    std::cout << "input_Team_Size: " ;
+    //std::cout << "input_Team_Size: " ;
 
     int N = 0;
 
