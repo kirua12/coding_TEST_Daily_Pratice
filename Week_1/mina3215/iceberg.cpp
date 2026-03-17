@@ -1,235 +1,90 @@
 #include <iostream>
-#include <string>
-#include <sstream>
 #include <cstring>
+#include <queue>
 
-int main()
-{
-    //std::cout << "input_Team_Size: " ;
+int row, col;
+int iceberg[300][300];
+int temp_iceberg[300][300];
+bool visited[300][300];
 
-    int  col, row= 0;
+int dx[] = {-1, 1, 0, 0};
+int dy[] = {0, 0, -1, 1};
 
-    std::cin >> row;
-    std::cin >> col;
-
-    int **iceberg = new int*[row];
+// BFS로 연결된 빙산 덩어리 개수 세기
+int countComponents() {
+    memset(visited, false, sizeof(visited));
+    int count = 0;
 
     for (int i = 0; i < row; i++) {
-        iceberg[i] = new int[col];
+        for (int j = 0; j < col; j++) {
+            if (iceberg[i][j] != 0 && !visited[i][j]) {
+                count++;
+                std::queue<std::pair<int,int>> q;
+                q.push({i, j});
+                visited[i][j] = true;
+                while (!q.empty()) {
+                    auto [x, y] = q.front(); q.pop();
+                    for (int d = 0; d < 4; d++) {
+                        int nx = x + dx[d];
+                        int ny = y + dy[d];
+                        if (nx >= 0 && nx < row && ny >= 0 && ny < col
+                            && !visited[nx][ny] && iceberg[nx][ny] != 0) {
+                            visited[nx][ny] = true;
+                            q.push({nx, ny});
+                        }
+                    }
+                }
+            }
+        }
     }
+    return count;
+}
 
+int main() {
+    std::cin >> row >> col;
 
-    for(int i = 0; i < row; i++)
-    {
-        for(int j = 0; j < col; j++)
-        {
+    for (int i = 0; i < row; i++)
+        for (int j = 0; j < col; j++)
             std::cin >> iceberg[i][j];
-        }
-    }
 
-    int year_count =0; //빙산이 녹는 년도를 저장하는 변수
-    while(1)
-    {
-        int **temp_iceberg = new int*[row]; //빙산이 녹기 전 상태를 기억할 Temp_iceBerge
-        for(int i = 0; i < row; i++)
-        {
-            temp_iceberg[i] = new int[col];
-        }
+    int year_count = 0;
 
-        int **label = new int*[row]; //빙산이 녹기 전 상태를 기억할 Temp_iceBerge
-        for(int i = 0; i < row; i++)
-        {
-            label[i] = new int[col];
-        }
+    while (true) {
+        int components = countComponents();
 
-        for (int i = 0; i < row; i++)
-        {
-            memcpy(temp_iceberg[i], iceberg[i], sizeof(int) * col);
+        if (components == 0) {
+            // 빙산이 다 녹았는데 분리 안 됨 -> 0 출력
+            std::cout << 0 << std::endl;
+            return 0;
+        }
+        if (components >= 2) {
+            // 빙산이 분리됨
+            std::cout << year_count << std::endl;
+            return 0;
         }
 
+        // 빙산 녹이기: temp에 현재 상태 백업 후 처리
+        memcpy(temp_iceberg, iceberg, sizeof(iceberg));
 
-        for(int i = 0; i<row; i++)
-        {
-            for(int j = 0; j<col;j++)
-            {
-                label[i][j] = 0; //label 초기화
-                if(temp_iceberg[i][j] !=0)
-                {
-                    int melt = 0; //녹는 양을 저장하는 변수
-
-                    if(i-1 >= 0 && temp_iceberg[i-1][j] == 0) //상
-                    {
-                        melt++;
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (temp_iceberg[i][j] != 0) {
+                    int melt = 0;
+                    for (int d = 0; d < 4; d++) {
+                        int nx = i + dx[d];
+                        int ny = j + dy[d];
+                        if (nx >= 0 && nx < row && ny >= 0 && ny < col
+                            && temp_iceberg[nx][ny] == 0) {
+                            melt++;
+                        }
                     }
-                    if(i+1 < row && temp_iceberg[i+1][j] == 0) //하
-                    {
-                        melt++;
-                    }
-                    if(j-1 >= 0 && temp_iceberg[i][j-1] == 0) //좌
-                    {
-                        melt++;
-                    }
-                    if(j+1 < col && temp_iceberg[i][j+1] == 0) //우
-                    {
-                        melt++;
-                    }
-
-                    iceberg[i][j] -= melt; //녹는 양만큼 빙산의 높이 감소
-
-                    if(iceberg[i][j] < 0) //빙산의 높이가 음수가 되는 경우 0으로 설정
-                    {
-                        iceberg[i][j] = 0;
-                    }
-
+                    iceberg[i][j] = std::max(0, iceberg[i][j] - melt);
                 }
             }
         }
 
-
-        //labeling 알고리즘 구현
-        int label_count = 1;
-
-        for(int i= 0 ; i<row; i++)
-        {
-            for(int j= 0 ; j<col; j++)
-            {
-                if(iceberg[i][j] != 0)
-                {
-                    if(i-1 >= 0 && label[i-1][j] != 0) //상
-                    {
-                        label[i][j] = label[i-1][j];
-                    }
- 
-                    else if(j-1 >= 0 && label[i][j-1] != 0) //좌
-                    {
-                        label[i][j] = label[i][j-1];
-                    }
-                    else if(j+1 < col && label[i][j+1] != 0) //우
-                    {
-                        label[i][j] = label[i][j+1];
-                    }
-                    else if(i+1 < row && label[i+1][j] != 0) //하
-                    {
-                        label[i][j] = label[i+1][j];
-                    }
-                    else
-                    {
-                        label[i][j] = label_count; //새로운 라벨 할당
-                        label_count++;
-                    }
-                    
-                }
-            }
-        }
-
-        if(label_count ==1)
-        {
-            for (int i = 0; i < row; i++)
-            {
-                delete[] label[i];
-            }
-            delete[] label;
-            break; //빙산이 모두 녹은 경우
-        }
-
-        int* max_label = new int[label_count-1]; //각 라벨의 개수를 저장하는 배열
-        memset(max_label, 0, sizeof(int) * (label_count-1)); //max_label 초기화
-
-        for(int i= 0 ; i<row; i++)
-        {
-            for(int j= 0 ; j<col; j++)
-            {
-                if(j+1<col && label[i][j] != 0 && label[i][j] != label[i][j+1] && label[i][j] > label[i][j+1]&& label[i][j+1] != 0) //우
-                {
-                    max_label[label[i][j]-1] = label[i][j+1];
-                }
-                else if(i-1>=0 && label[i][j] != 0 && label[i][j] != label[i-1][j] && label[i][j] > label[i-1][j] && label[i-1][j] != 0) //상
-                {
-                    max_label[label[i][j]-1] = label[i-1][j];
-                }
-                else if(i+1<row && label[i][j] != 0 && label[i][j] != label[i+1][j] && label[i][j] > label[i+1][j] && label[i+1][j] != 0) //하
-                {
-                    max_label[label[i][j]-1] = label[i+1][j];
-                }
-                else if(j-1>=0 && label[i][j] != 0 && label[i][j] != label[i][j-1] && label[i][j] > label[i][j-1] && label[i][j-1] != 0) //좌
-                {
-                    max_label[label[i][j]-1] = label[i][j-1];
-                }
-                 else if(label[i][j] != 0 && max_label[label[i][j]] == 0)
-                {
-                    max_label[label[i][j]-1] = label[i][j];
-                }
-            }
-        }
-
-        // 아래 주석은 디버깅용
-        // std::cout <<std::endl;
-        // for(int i= 0 ; i<row; i++)
-        // {
-        //     for(int j= 0 ; j<col; j++)
-        //     {
-        //         std::cout << iceberg[i][j] << " ";
-        //     }
-        //     std::cout << std::endl;
-        // }
-
-
-
-        // std::cout <<std::endl;
-        // for(int i= 0 ; i<row; i++)
-        // {
-        //     for(int j= 0 ; j<col; j++)
-        //     {
-        //         std::cout << label[i][j] << " ";
-        //     }
-        //     std::cout << std::endl;
-        // }
-
-        //라벨링이 안되는 문제가 있는데 뭐가 문제일까에 대한 분석을 해야함
-
-        int iceberg_count = 0; //빙산의 개수를 저장하는 변수
-        for(int i=1;i<label_count-1;i++)
-        {
-            if(max_label[i] != 1)
-            {
-                iceberg_count++;
-            }
-        }
-        
         year_count++;
-        if(iceberg_count >= 1) //빙산이 2개 이상인 경우
-        {
-            for (int i = 0; i < row; i++)
-            {
-                delete[] label[i];
-            }
-            delete[] label;
-            delete[] max_label;
-            break;
-        }
-
-
-        for(int i= 0 ; i<row; i++)
-        {
-            delete[] label[i];
-        }
-        delete[] label;
-        delete[] max_label;
     }
 
-
-
-
-    std::cout << year_count << std::endl;
-
-
-    for(int i= 0 ; i<row; i++)
-    {
-        delete[] iceberg[i];
-    }
-    delete[] iceberg;
-
-    system("pause");
     return 0;
-
 }
