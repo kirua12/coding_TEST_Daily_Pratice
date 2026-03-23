@@ -21,7 +21,7 @@ int main()
         {
             std::string input;
             std::cin >> input;
-            room[i][j] = std::stoi(input); //입력받은 방의 상태를 정수로 변환하여 배열에 저장
+            room[i][j] = std::stoi(input); //입력받은 방의 상태를 정수로 변환하여 배열에 저장 // 내잔디 어디갔어
         }
     }
 
