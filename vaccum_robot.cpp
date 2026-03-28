@@ -88,8 +88,8 @@ int main()
 
     int x,y,direct = 0; // 로봇의 초기 상태
 
-    std::cin >> x;
     std::cin >> y;
+    std::cin >> x;
     std::cin >> direct;
 
 
@@ -160,21 +160,12 @@ int main()
             else
                 break;
         }
+
+
         
     }
 
-
-    std::cout <<std::endl;
-    std::cout <<std::endl;
-    std::cout <<std::endl;
-
-
     std::cout << count;
-
-    std::cout <<std::endl;
-    std::cout <<std::endl;
-    std::cout <<std::endl;
-
 
     for(int i=0; i<row; i++)
     {
