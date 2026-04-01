@@ -2,6 +2,14 @@
 
 ---
 
+## week 2
+
+1. [10808번: 알파벳 개수](https://www.acmicpc.net/problem/10808)
+
+2. [11399 동전 0](https://www.acmicpc.net/problem/10808) 
+
+
+
 ## week 1
 
 1. [[14889] 퇴사](https://www.acmicpc.net/problem/14889)
