@@ -6,7 +6,7 @@
 
 1. [10808번: 알파벳 개수](https://www.acmicpc.net/problem/10808)
 
-2. [11399 동전 0](https://www.acmicpc.net/problem/10808) 
+2. [11047 동전 0](https://www.acmicpc.net/problem/11047) 
 
 
 
